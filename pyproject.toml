@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools >= 61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[project]
+name = "yeabm25"
+description = "Yet Another BM25 algorithm implementation with additional per document vectors"
+requires-python = ">3.10"
+version = "0.1.0"
+keywords = ["text", "bm25", "vector embeddings", "information retrieval"]
+# readme = "README.md"
+dependencies = [
+  "numpy",
+]
+authors = [
+  {name = "Demir Tonchev", email = "{surname}.{name}@gmail.com"},
+]
+
+[project.urls]
+Homepage = "https://github.com/DemirTonchev/yeabm25"
+
+[project.optional-dependencies]
+test = ["pytest", "coverage"]
