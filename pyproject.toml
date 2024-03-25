@@ -11,7 +11,7 @@ description = "Yet Another BM25 algorithm implementation with additional per doc
 requires-python = ">3.10"
 version = "0.1.0"
 keywords = ["text", "bm25", "vector embeddings", "information retrieval"]
-# readme = "README.md"
+readme = "README.md"
 dependencies = [
   "numpy",
 ]
