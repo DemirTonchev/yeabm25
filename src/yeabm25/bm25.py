@@ -10,7 +10,6 @@ from typing import TypeAlias, Optional
 Vector1d: TypeAlias = np.ndarray | list[float]
 
 
-
 # experimental
 # this is created with possible compatibility with haystack>2.0
 @dataclass
