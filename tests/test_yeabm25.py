@@ -28,3 +28,12 @@ def test_average_idf(corpus):
     terms_with_idf_correction = [k for k, v in yeabm.word_df.items() if v >= yeabm.corpus_size // 2]
     for term in terms_with_idf_correction:
         assert yeabm.idf[term] == yeabm.average_idf
+
+@pytest.mark.parametrize("epsilon", [0.25, 0.5, 0.75])
+def test_top_n(corpus, epsilon):
+    yeabm = YeaBM25(epsilon=epsilon)
+    yeabm.fit(corpus=corpus)
+    scores = yeabm.get_top_n(['brown', 'quick', 'fox'], n=3)
+    assert [i for i in scores] == [0, 2, 1]
+    scores = yeabm.get_top_n(['man', 'windy', 'london'], n=3)
+    assert [i for i in scores] == [4, 5, 3]

@@ -2,7 +2,6 @@ import math
 from pathlib import Path
 import numpy as np
 from collections import defaultdict, Counter
-# from functools import cached_property
 from dataclasses import dataclass, field
 from typing import TypeAlias, Optional
 
@@ -187,6 +186,13 @@ class YeaBM25:
                                            (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
         return score
 
+    def get_top_n(self, query: list[str], n=5):
+        """Returns the indexes of the top n documents and scores in sorted order 
+        """
+        scores = self.get_scores(query)
+        isort = np.argsort(scores)[-n:][::-1]
+        return {i: s for i, s in zip(isort, scores[isort].round(2))}
+
     def document_self_scores(self, idx):
         scores = {}
         for q, q_freq in self.doc_freqs[idx].items():
@@ -238,13 +244,13 @@ class YeaBM25:
 
     def serialize(self, fout: Path | str, method: str = 'json', **kwargs):
         try:
-            _serializers_map[method](self.state_dict(), fout, **kwargs)
+            _serializers_registry[method](self.state_dict(), fout, **kwargs)
         except KeyError:
             raise
 
     @classmethod
     def deserialize(cls, fin, method: str = 'json'):
-        loaded_state_dict = _deserializers_map[method](fin)
+        loaded_state_dict = _deserializers_registry[method](fin)
         return cls.from_state_dict(loaded_state_dict)
 
     def __repr__(self) -> str:
@@ -263,13 +269,13 @@ def _deserialize_json(fin: Path | str):
         return json.load(f)
 
 
-_serializers_map = {'json': _serialize_json, }
-_deserializers_map = {'json': _deserialize_json, }
+_serializers_registry = {'json': _serialize_json, }
+_deserializers_registry = {'json': _deserialize_json, }
 
 
 def register_serializer(method, serialize_fn):
-    _serializers_map[method] = serialize_fn
+    _serializers_registry[method] = serialize_fn
 
 
 def register_deserializer(method, deserialize_fn):
-    _deserializers_map[method] = deserialize_fn
+    _deserializers_registry[method] = deserialize_fn
