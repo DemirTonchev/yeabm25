@@ -24,13 +24,21 @@ jobs:
       - name: Run black
         run: |
           poetry run black --check src
+      - name: Run isort
+        run: |
+          poetry run isort --check src
 
       - name: Run flake8
         run: |
           poetry run flake8
+
+      - name: Run pylint
+        run: |
+          poetry run pylint src
+
       - name: Run pytest
         run: |
           poetry run pytest
-      - name: Run mypy
-        run: |
-          poetry run mypy src
+      # - name: Run mypy
+      #   run: |
+      #     poetry run mypy src

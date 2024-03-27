@@ -1,1 +1,1 @@
-from .bm25 import YeaBM25, BMDocument
+from .bm25 import BMDocument, YeaBM25
