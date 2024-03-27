@@ -44,7 +44,7 @@ class BMDocument:
 class YeaBM25:
 
     """
-    The class representing the Okapi-BM25 variant of the algorithm. Okapi-BM25 is a ranking function widely used as the OLD(before transformers went 
+    The class representing the Okapi-BM25 variant of the algorithm. Okapi-BM25 is a ranking function widely used as the OLD(before transformers went
     brrrrrrrrrrrrr) state of the art for Information Retrieval tasks. BM25 is a variation of the TF-IDF model.
     This implementation applies negative idf correction from here: https://arxiv.org/pdf/1602.03606.pdf#page=4. Which also sets a floor a floor on the
     idf values to eps * average_idf.
@@ -79,12 +79,12 @@ class YeaBM25:
         ----------
         k1 : float
             Controls term frequency component.
-            k = 0 ignore tf, typical values are 1.2-2. 
+            k = 0 ignore tf, typical values are 1.2-2.
 
         b : float
             Lenght normalization.
             b=1 full document lenght normalization
-            b=0 no document lenght normalization 
+            b=0 no document lenght normalization
             Lenght normalization component:
             B = (1 - b) + b * doc_len/avgdl
 
@@ -135,7 +135,7 @@ class YeaBM25:
             # dont add idf value to the average if 0
             if idf_value > 0:
                 self.idf[word] = idf_value
-                self.average_idf = self.average_idf + (idf_value - self.average_idf)/(len(self.idf))
+                self.average_idf = self.average_idf + (idf_value - self.average_idf) / (len(self.idf))
 
             else:
                 negative_idfs.add(word)
@@ -187,7 +187,7 @@ class YeaBM25:
         return score
 
     def get_top_n(self, query: list[str], n=5):
-        """Returns the indexes of the top n documents and scores in sorted order 
+        """Returns the indexes of the top n documents and scores in sorted order.
         """
         scores = self.get_scores(query)
         isort = np.argsort(scores)[-n:][::-1]
@@ -215,7 +215,7 @@ class YeaBM25:
             yield self.document_vector(idx)
 
     def get_embeddings(self) -> np.ndarray:
-        """This should be used only if the index is relatively small. 
+        """This should be used only if the index is relatively small.
         """
         matrix = np.zeros(shape=(len(self.doc_len), len(self.idf)))  # numdocs rows and num words cols
         doc_len = np.asarray(self.doc_len)
