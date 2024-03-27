@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 100
+max-doc-length=120
+extend-ignore = E203
+mypy_config = mypy.ini
+extend-exclude=
+  .venv
+  __init__.py

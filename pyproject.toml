@@ -1,7 +1,3 @@
-[build-system]
-requires = ["setuptools >= 61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [tool.setuptools]
 package-dir = {"" = "src"}
 
@@ -11,13 +7,56 @@ description = "Yet Another BM25 algorithm implementation with additional per doc
 requires-python = ">3.10"
 version = "0.1.0"
 keywords = ["text", "bm25", "vector embeddings", "information retrieval"]
+
 readme = "README.md"
-dependencies = [
-  "numpy",
-]
-authors = [
-  {name = "Demir Tonchev", email = "{surname}.{name}@gmail.com"},
-]
+
+[tool.poetry]
+name = "yeabm25"
+version = "0.0.1"
+description = ""
+authors = ["Demir Tonchev"]
+packages = [{ include = "yeabm25", from = "src" }]
+
+[tool.poetry.group.dev.dependencies]
+black = "24.3.0"
+isort = "5.13.2"
+flake8 = "7.0.0"
+pylint = "3.1.0"
+pylint-pydantic = "0.3.2"
+mypy = "1.9.0"
+types-pytz = "2022.7.1.2"
+pytest = "7.4.0"
+
+[tool.poetry.dependencies]
+python = "^3.10,<3.11"
+numpy = "1.24.4"
+
+# [[tool.poetry.source]]
+# name = "dtonchev"
+# url = "https://artifactor.ee/artifactory/api/pypi/pypi/simple"
+# priority = "supplemental"
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+include = "\\.pyi?$"
+
+[tool.isort]
+profile = "black"
+py_version = 310
+line_length = 120
+
 
 [project.urls]
 Homepage = "https://github.com/DemirTonchev/yeabm25"
