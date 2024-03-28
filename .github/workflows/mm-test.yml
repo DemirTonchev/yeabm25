@@ -18,8 +18,7 @@ jobs:
         with:
           micromamba-version: '1.5.8-0'
           environment-name: ${{ matrix.python-version }}
-          init-shell: >-
-            bash
+          init-shell: bash
           create-args: >-
             pip
             numpy
@@ -30,7 +29,7 @@ jobs:
           python -m pip install .
           python -m pip install pytest
           if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
-        # shell: micromamba-shell {0}
+        shell: bash
       - name: Run custom command in micromamba environment
         run: |
           pytest
