@@ -28,6 +28,7 @@ jobs:
           python -m pip install .
           python -m pip install pytest
           if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+        shell: micromamba-shell {0}
       - name: Run custom command in micromamba environment
         run: pytest
         shell: micromamba-shell {0}
