@@ -110,6 +110,7 @@ class YeaBM25:
         self.idf: dict = {}
         self.average_idf: float = 0
         self.corpus_size: int = 0
+        self.__isfit = False
 
     def _process_doc(self, document: list[str]) -> None:
         """Gets a documents, which is represented as a list of words(strings).
@@ -148,6 +149,8 @@ class YeaBM25:
     def fit(self, corpus: list[list[str]] | list[BMDocument]):
         """Fits the index given a corpus of documents. In the case of bm25 a document is list of words(strings)
         """
+        if self.__isfit:
+            raise Exception("The index is alredy fit, please use update method")
 
         self.corpus_size: int = len(corpus)
         self.doc_len = [len(doc) for doc in corpus]
@@ -157,7 +160,7 @@ class YeaBM25:
             self._process_doc(document)
 
         self._calc_idf()
-
+        self.__isfit = True
         return self
 
     def update(self, corpus: list[list[str]] | list[BMDocument]):

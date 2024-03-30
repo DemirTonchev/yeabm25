@@ -8,16 +8,17 @@ package-dir = {"" = "src"}
 [project]
 name = "yeabm25"
 description = "Yet Another BM25 algorithm implementation with additional per document vectors"
-requires-python = ">3.10"
+requires-python = ">=3.10"
 version = "0.1.0"
-keywords = ["text", "bm25", "vector embeddings", "information retrieval"]
+keywords = ["text", "bm25", "dense vector embeddings", "information retrieval", "hybrid search"]
 readme = "README.md"
 dependencies = [
-  "numpy",
+  "numpy>=1.26",
 ]
 authors = [
   {name = "Demir Tonchev", email = "{surname}.{name}@gmail.com"},
 ]
+license = { file = "LICENSE" }
 
 [project.urls]
 Homepage = "https://github.com/DemirTonchev/yeabm25"
