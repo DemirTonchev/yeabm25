@@ -1,6 +1,6 @@
 # yeabm25
 Yet Another BM25 algorithm implementation with helpful implementation of:
-1. functionallity to update the index with .update() method. 
+1. functionallity to update the index with .update() method. In fack you can use just update. 
 2. per document vector.
 
 ```python
@@ -39,5 +39,4 @@ print((bm_index.get_scores(['fox', 'jump']) == bm_update.get_scores(['fox', 'jum
 ```
 
 This work is inspired(and uses some code and ideas) by this great package - https://github.com/dorianbrown/rank_bm25/tree/master.
-
-#### Todo tests ;) 
+The main focus is creating document and query vectors (sparse vectors soon). Then using the vectors with your favourite Vector DB.
