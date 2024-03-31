@@ -37,3 +37,11 @@ def test_top_n(corpus, epsilon):
     assert [i for i in scores] == [0, 2, 1]
     scores = yeabm.get_top_n(['man', 'windy', 'london'], n=3)
     assert [i for i in scores] == [4, 5, 3]
+
+@pytest.mark.parametrize("query, expected", [
+    (['fox', 'quick'], [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    (['cat', 'raven'], [0] * 14)])
+def test_encode_query(corpus, query, expected):
+    yeabm = YeaBM25()
+    yeabm.fit(corpus)
+    assert yeabm.encode_query(query) == expected

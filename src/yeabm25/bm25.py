@@ -125,7 +125,7 @@ class YeaBM25:
     def _calc_idf(self):
 
         # idf can be negative if word is contained in more than half of documents
-        negative_idfs = set()
+        negative_idfs = list()
         self.idf = {}
         for word, freq in self.word_df.items():
             # https://arxiv.org/pdf/1602.03606.pdf#page=4
@@ -139,7 +139,7 @@ class YeaBM25:
                 self.average_idf = self.average_idf + (idf_value - self.average_idf) / (len(self.idf))
 
             else:
-                negative_idfs.add(word)
+                negative_idfs.append(word)
 
         # eps correction
         eps_correction = self.epsilon * self.average_idf
@@ -196,7 +196,7 @@ class YeaBM25:
         isort = np.argsort(scores)[-n:][::-1]
         return {i: s for i, s in zip(isort, scores[isort].round(2))}
 
-    def document_self_scores(self, idx):
+    def document_self_scores(self, idx: int):
         scores = {}
         for q, q_freq in self.doc_freqs[idx].items():
             s = self.idf.get(q, 0) * (
@@ -206,7 +206,7 @@ class YeaBM25:
             scores[q] = s
         return scores
 
-    def document_vector(self, idx):
+    def document_vector(self, idx: int):
         feats = self.features_
         scores = self.document_self_scores(idx)
         return [scores[f] if f in scores else 0. for f in feats]
@@ -216,6 +216,9 @@ class YeaBM25:
         """
         for idx in range(len(self.doc_freqs)):
             yield self.document_vector(idx)
+
+    def encode_query(self, query: list[str]) -> list[float]:
+        return [1 if f in query else 0 for f in self.features_]
 
     def get_embeddings(self) -> np.ndarray:
         """This should be used only if the index is relatively small.
