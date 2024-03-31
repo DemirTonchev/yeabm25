@@ -7,7 +7,8 @@ package-dir = {"" = "src"}
 
 [project]
 name = "yeabm25"
-description = "Yet Another BM25 algorithm implementation with additional per document vectors"
+description = """Yet Another BM25 algorithm implementation with update method, so that you dont need to fit on old + new documents.
+Also you can get document and query vectors to use with any Vector DB."""
 requires-python = ">=3.10"
 version = "0.1.0"
 keywords = ["text", "bm25", "dense vector embeddings", "information retrieval", "hybrid search"]
