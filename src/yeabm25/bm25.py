@@ -7,10 +7,12 @@ from typing import TypeAlias, Optional
 
 # type alias just for readability
 Vector1d: TypeAlias = np.ndarray | list[float]
-
+SparseVector: TypeAlias = dict[int, float]  # #TODO | Iterable[Tuple[int, float]], scipy sparse
 
 # experimental
 # this is created with possible compatibility with haystack>2.0
+
+
 @dataclass
 class BMDocument:
     content: list[str]
@@ -110,6 +112,7 @@ class YeaBM25:
         self.idf: dict = {}
         self.average_idf: float = 0
         self.corpus_size: int = 0
+        self.ftoi: dict[str, int]  # feature name to index map
         self.__isfit = False
 
     def _process_doc(self, document: list[str]) -> None:
@@ -160,6 +163,7 @@ class YeaBM25:
             self._process_doc(document)
 
         self._calc_idf()
+        self._ftoi()
         self.__isfit = True
         return self
 
@@ -172,13 +176,16 @@ class YeaBM25:
             self._process_doc(document)
 
         self._calc_idf()
-
+        self._ftoi()
         return self
 
     # sklearn like api
     @property
     def features_(self):
         return [word for word in self.idf]
+
+    def _ftoi(self):
+        self.ftoi = {feat: idx for idx, feat in enumerate(self.features_)}
 
     def get_scores(self, query: list[str]):
         score = np.zeros(self.corpus_size)
@@ -196,7 +203,7 @@ class YeaBM25:
         isort = np.argsort(scores)[-n:][::-1]
         return {i: s for i, s in zip(isort, scores[isort].round(2))}
 
-    def document_self_scores(self, idx: int):
+    def document_self_scores(self, idx: int) -> dict[str, float]:
         scores = {}
         for q, q_freq in self.doc_freqs[idx].items():
             s = self.idf.get(q, 0) * (
@@ -206,19 +213,31 @@ class YeaBM25:
             scores[q] = s
         return scores
 
-    def document_vector(self, idx: int):
+    def encode_document(self, idx: int, outputtype: str = 'dict') -> SparseVector:
+        return {self.ftoi[f]: s for f, s in self.document_self_scores(idx).items()}
+
+    def encode_document_dense(self, idx: int) -> list[float]:
         feats = self.features_
         scores = self.document_self_scores(idx)
         return [scores[f] if f in scores else 0. for f in feats]
 
     def iter_document_vectors(self):
-        """Iterate over the vectors, for example if you to store them in a Vector DB.
+        """Iterate over the vectors(dense), for example if you to store them in a Vector DB.
         """
         for idx in range(len(self.doc_freqs)):
-            yield self.document_vector(idx)
+            yield self.encode_document_dense(idx)
 
-    def encode_query(self, query: list[str]) -> list[float]:
-        return [1 if f in query else 0 for f in self.features_]
+    def iter_document_vectors_sparse(self):
+        """Iterate over the vectors(sparse), for example if you to store them in a Vector DB.
+        """
+        for idx in range(len(self.doc_freqs)):
+            yield self.encode_document(idx)
+
+    def encode_query(self, query: list[str]) -> SparseVector:
+        return {self.ftoi[f]: 1. for f in query if f in self.features_}
+
+    def encode_query_dense(self, query: list[str]) -> list[float]:
+        return [1. if f in query else 0. for f in self.features_]
 
     def get_embeddings(self) -> np.ndarray:
         """This should be used only if the index is relatively small.

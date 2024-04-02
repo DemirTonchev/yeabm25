@@ -39,7 +39,7 @@ assert yeabm.get_scores(['fox', 'jump']) == bm_update.get_scores(['fox', 'jump']
 ```
 
 This work is inspired(and uses some code and ideas) by this great package - https://github.com/dorianbrown/rank_bm25/tree/master.
-The main focus is creating document and query vectors (sparse vectors support - soon(hopefully not "Blizzard soon")). Then using the vectors with your favourite Vector DB.
+The main focus is creating document and query vectors (supports sparse vectors). Then using the vectors with your favourite Vector DB.
 
 How to get the document and query vectors: 
 ```python
