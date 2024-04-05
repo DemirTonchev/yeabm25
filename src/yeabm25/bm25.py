@@ -214,9 +214,13 @@ class YeaBM25:
         return scores
 
     def encode_document(self, idx: int, outputtype: str = 'dict') -> SparseVector:
+        """Encodes document at index as a sparse vector. Ideal for vector DB.
+        """
         return {self.ftoi[f]: s for f, s in self.document_self_scores(idx).items()}
 
     def encode_document_dense(self, idx: int) -> list[float]:
+        """Encodes document at index as a dense vector.
+        """
         feats = self.features_
         scores = self.document_self_scores(idx)
         return [scores[f] if f in scores else 0. for f in feats]
