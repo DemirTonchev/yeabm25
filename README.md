@@ -43,11 +43,17 @@ The main focus is creating document and query vectors (supports sparse vectors).
 
 How to get the document and query vectors: 
 ```python
-# recommended approach for large corpus, returns iterator. Each element is list[float]
-# returns generator object
-yeabm.iter_document_vectors()
-# use it 
-for vector in yeabm.iter_document_vectors():
+# recommended approach for large corpus, returns iterator. Each element is sparse vector. 
+# To represent a sparse vector we can use:
+# - Dict[int, float] <--- This is currently the sparse format in YeaBM25
+# - Any of the scipy.sparse sparse matrices class family with shape[0] == 1
+# - Iterable[Tuple[int, float]]
+
+# this method returns generator object
+yeabm.iter_document_vectors() # or
+yeabm.iter_document_vectors_sparse() # <--- recommended for usage with Vector DB
+# use it in loop
+for vector in yeabm.iter_document_vectors_sparse():
     # dostuff could be put in DB. 
     dostuff(vector)
 
@@ -56,14 +62,14 @@ yeabm.encode_query(query)
 ```
 
 Why would you want to do that? Essentially the BM25 score formula is a sum, so it is a perfect candidate for one of the metrics any DB
-supports - inner product.
+supports - **inner product (IP)**.
 ```python
 # 
 bm_index.get_scores(['quick', 'fox'])
 # ~ [1.30, 0.0, 0.72, 0.0, 0.0, 0.0]
 
 # you get the same scores like so:
-yeabm.get_embeddings() @ np.asarray(yeabm.encode_query(['fox', 'quick']))
+yeabm.get_embeddings() @ np.asarray(yeabm.encode_query_dense(['fox', 'quick']))
 # ~ [1.30, 0.0, 0.72, 0.0, 0.0, 0.0]
 ```
 Of course you would like to leave the last calculation to the Vector DB.
@@ -82,3 +88,6 @@ yeabm.get_scores(['brown'])
 # this is helpful if the user is looking for a term that is abundant in the corpus and would still get somewhat useful results
 # where with BM25Okapi you would get essentially random results (or no results).
 ```
+
+### Usage examples:
+- [Use sparse vectors with Milvus DB](examples/sparse_vector_milvus.ipynb)
