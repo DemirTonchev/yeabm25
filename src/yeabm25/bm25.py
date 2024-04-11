@@ -11,8 +11,6 @@ SparseVector: TypeAlias = dict[int, float]  # #TODO | Iterable[Tuple[int, float]
 
 # experimental
 # this is created with possible compatibility with haystack>2.0
-
-
 @dataclass
 class BMDocument:
     content: list[str]
