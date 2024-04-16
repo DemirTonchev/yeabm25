@@ -29,6 +29,7 @@ def test_average_idf(corpus):
     for term in terms_with_idf_correction:
         assert yeabm.idf[term] == yeabm.average_idf
 
+
 @pytest.mark.parametrize("epsilon", [0.25, 0.5, 0.75])
 def test_top_n(corpus, epsilon):
     yeabm = YeaBM25(epsilon=epsilon)
@@ -38,10 +39,31 @@ def test_top_n(corpus, epsilon):
     scores = yeabm.get_top_n(['man', 'windy', 'london'], n=3)
     assert [i for i in scores] == [4, 5, 3]
 
+
 @pytest.mark.parametrize("query, expected", [
     (['fox', 'quick'], [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-    (['cat', 'raven'], [0] * 14)])
+    (['cat', 'raven'], [0] * 14)
+])
+def test_encode_query_dense(corpus, query, expected):
+    yeabm = YeaBM25()
+    yeabm.fit(corpus)
+    assert yeabm.encode_query_dense(query) == expected
+
+
+@pytest.mark.parametrize("query, expected", [
+    (['fox', 'lazy'], {1: 1.0, 3: 1.0}),
+    (['cat', 'raven'], {})
+])
 def test_encode_query(corpus, query, expected):
     yeabm = YeaBM25()
     yeabm.fit(corpus)
     assert yeabm.encode_query(query) == expected
+
+
+def test_fromdict_encodeonly(corpus):
+    yeabm = YeaBM25()
+    yeabm.fit(corpus=corpus)
+    state_dict = yeabm.state_dict(state='encodeonly')
+    new_yeabm = YeaBM25.from_state_dict(state_dict)
+
+    assert yeabm.idf == new_yeabm.idf

@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 from collections import defaultdict, Counter
 from dataclasses import dataclass, field
-from typing import TypeAlias, Optional
+from typing import Literal, TypeAlias, Optional
 
 # type alias just for readability
 Vector1d: TypeAlias = np.ndarray | list[float]
@@ -253,25 +253,37 @@ class YeaBM25:
             matrix[:, idx] = word_vector
         return matrix
 
-    def state_dict(self):
-        return {
-            'k1': self.k1,
-            'b': self.b,
-            'epsilon': self.epsilon,
-            'avgdl': self.avgdl,
-            'idf': self.idf,
-        }
+    def state_dict(self, state: Literal['encodeonly', 'full'] = 'encodeonly'):
+        """ Exports the current state
+        Parameters
+        ----------
+        state : Literal['encodeonly', 'full']
+            encodeonly - exports only state that is sufficient for loading later and only encoding new queries.
+            full - exports full state that is suitable for update, encoding of documents and queries.
+        """
+        if state == 'encodeonly':
+            return {
+                'k1': self.k1,
+                'b': self.b,
+                'epsilon': self.epsilon,
+                'idf': self.idf,
+            }
+        elif state == 'full':
+            raise ValueError('option "full" currently is not supported')
+        else:
+            raise ValueError(f'option {state} unknown')
 
     @classmethod
     def from_state_dict(cls, state_dict):
         # ugly but effetive for now
-        bm_index = cls()
-        bm_index.__dict__.update(**state_dict)
-        return bm_index
+        yeabm = cls()
+        yeabm.__dict__.update(**state_dict)
+        yeabm._ftoi()
+        return yeabm
 
-    def serialize(self, fout: Path | str, method: str = 'json', **kwargs):
+    def serialize(self, fout: Path | str, state: Literal['encodeonly', 'full'] = 'encodeonly', method: str = 'json', **kwargs):
         try:
-            _serializers_registry[method](self.state_dict(), fout, **kwargs)
+            _serializers_registry[method](self.state_dict(state=state), fout, **kwargs)
         except KeyError:
             raise
 
