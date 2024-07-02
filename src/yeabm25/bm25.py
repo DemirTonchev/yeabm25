@@ -177,6 +177,20 @@ class YeaBM25:
         self._ftoi()
         return self
 
+    def index(self, corpus: list[list[str]]):
+        """beta feature"""
+        self.corpus_size += len(corpus)
+        self.doc_len += [len(doc) for doc in corpus]
+        self.avgdl = sum(self.doc_len) / self.corpus_size
+
+        for document in corpus:
+            self._process_doc(document)
+
+    def flush(self):
+        """beta feature, use flush only after index"""
+        self._calc_idf()
+        self._ftoi()
+
     # sklearn like api
     @property
     def features_(self):
