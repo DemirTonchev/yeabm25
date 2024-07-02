@@ -2,7 +2,14 @@
 Yet Another BM25 algorithm implementation with helpful implementation of:
 1. functionallity to update the index with .update() method. In fack you can use just update. 
 2. per document vector.
+3. sparse vector support
 
+Installation:
+```
+pip install yeabm25
+```
+
+### Quickstart
 ```python
 from yeabm25 import YeaBM25
 import nltk 
