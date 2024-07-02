@@ -253,7 +253,7 @@ class YeaBM25:
             matrix[:, idx] = word_vector
         return matrix
 
-    def state_dict(self, state: Literal['encodeonly', 'full'] = 'encodeonly'):
+    def state_dict(self, state: Literal['encodeonly', 'full'] = 'full'):
         """ Exports the current state
         Parameters
         ----------
@@ -267,9 +267,20 @@ class YeaBM25:
                 'b': self.b,
                 'epsilon': self.epsilon,
                 'idf': self.idf,
+                'state': 'encodeonly'
             }
         elif state == 'full':
-            raise ValueError('option "full" currently is not supported')
+            return {
+                'k1': self.k1,
+                'b': self.b,
+                'epsilon': self.epsilon,
+                'corpus_size': self.corpus_size,
+                'doc_len': self.doc_len,
+                'avgdl': self.avgdl,
+                'word_df': self.word_df,
+                'doc_freqs': self.doc_freqs,
+                'state': 'full'
+            }
         else:
             raise ValueError(f'option {state} unknown')
 
@@ -277,15 +288,23 @@ class YeaBM25:
     def from_state_dict(cls, state_dict):
         # ugly but effetive for now
         yeabm = cls()
-        yeabm.__dict__.update(**state_dict)
+        state_type = state_dict.pop('state', 'encodeonly')
+
+        if state_type == 'full':  # full statedict
+            state_dict['word_df'] = defaultdict(int, state_dict['word_df'])
+            yeabm.__dict__.update(**state_dict)
+            yeabm._calc_idf()
+        else:  # encode only state
+            yeabm.__dict__.update(**state_dict)
+
         yeabm._ftoi()
         return yeabm
 
-    def serialize(self, fout: Path | str, state: Literal['encodeonly', 'full'] = 'encodeonly', method: str = 'json', **kwargs):
+    def serialize(self, fout: Path | str, state: Literal['encodeonly', 'full'] = 'full', method: str = 'json', **kwargs):
         try:
             _serializers_registry[method](self.state_dict(state=state), fout, **kwargs)
         except KeyError:
-            raise
+            raise KeyError("Unkown serialization method")
 
     @classmethod
     def deserialize(cls, fin, method: str = 'json'):
